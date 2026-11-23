@@ -1,0 +1,41 @@
+name: Calculator CI-CD Lab
+on:
+  push:
+
+jobs:
+  build-test-deliver:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release
+
+    - name: Test
+      run: dotnet test --no-build
+
+    - name: Generate Results
+      run: |
+        echo "CI/CD Team Registration Results" > result.txt
+        echo "===============================" >> result.txt
+        echo "" >> result.txt
+        echo "Registered Teams:" >> result.txt
+        echo "" >> result.txt
+        cat teams/*.txt >> result.txt
+
+    - name: Display Results
+      run: cat result.txt
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: team-results
+        path: result.txt
